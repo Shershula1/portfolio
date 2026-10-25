@@ -27,7 +27,10 @@ export function PortfolioHome() {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (results.length === 1) router.push(results[0].href);
+    if (results.length !== 1) return;
+    const href = results[0].href;
+    if (href.startsWith("http")) window.location.assign(href);
+    else router.push(href);
   }
 
   return (
@@ -74,12 +77,12 @@ export function PortfolioHome() {
           </div>
         ) : (
           <ul className="mt-10 grid gap-8 sm:grid-cols-2">
-            {results.map((project) => (
-              <li key={project.slug}>
-                <Link
-                  href={project.href}
-                  className="group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring"
-                >
+            {results.map((project) => {
+              const external = project.href.startsWith("http");
+              const className =
+                "group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring";
+              const card = (
+                <>
                   <span className={`relative block aspect-[4/3] ${project.frameClass}`}>
                     <Image
                       src={project.image}
@@ -97,9 +100,22 @@ export function PortfolioHome() {
                       {project.date}
                     </time>
                   </span>
-                </Link>
-              </li>
-            ))}
+                </>
+              );
+              return (
+                <li key={project.slug}>
+                  {external ? (
+                    <a href={project.href} className={className}>
+                      {card}
+                    </a>
+                  ) : (
+                    <Link href={project.href} className={className}>
+                      {card}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
 

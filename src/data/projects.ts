@@ -12,7 +12,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "room",
-    href: "/room",
+    href: "https://cartoons-ones-missed-village.trycloudflare.com/",
     title: "Неосвещаемая комната",
     date: "2026",
     image: "/projects/room.png",
