@@ -1,0 +1,29 @@
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-manrope",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "Даня Ретивых — портфолио",
+    template: "%s — Даня Ретивых",
+  },
+  description:
+    "Портфолио Дани Ретивых: неосвещаемая комната и Evernote. На карточке картинка, название и год.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+} >) {
+  return (
+    <html lang="ru" className={manrope.variable}>
+      <body className="min-h-dvh antialiased">{children}</body>
+    </html>
+  );
+}
