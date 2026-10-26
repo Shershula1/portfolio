@@ -9,13 +9,16 @@
 
 ```bash
 npm install
-npm run dev
+npm run build
+npm run start -- --hostname 0.0.0.0 --port 4317
 ```
 
 Откройте [http://127.0.0.1:4317](http://127.0.0.1:4317).
 
+Для правки интерфейса:
+
 ```bash
-npm run dev -- --port 4317
+npm run dev -- --hostname 0.0.0.0 --port 4317
 ```
 
 Проверка оптики комнаты:

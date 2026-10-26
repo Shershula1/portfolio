@@ -1,12 +1,8 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FlipHorizontal2, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { projects } from "@/data/projects";
 
 export function PortfolioHome() {
@@ -18,9 +14,7 @@ export function PortfolioHome() {
     const needle = query.trim().toLowerCase();
     if (!needle) return projects;
     return projects.filter((project) => {
-      const haystack = [project.title, project.date, ...project.keywords]
-        .join(" ")
-        .toLowerCase();
+      const haystack = [project.title, project.date, ...project.keywords].join(" ").toLowerCase();
       return haystack.includes(needle);
     });
   }, [query]);
@@ -47,55 +41,54 @@ export function PortfolioHome() {
         <form onSubmit={onSubmit} className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
           <label className="relative min-w-0 flex-1">
             <span className="sr-only">Поиск по проектам</span>
-            <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
+            <SearchIcon />
+            <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Поиск по проектам"
               type="search"
-              className="h-12 rounded-full bg-white pr-4 pl-11 text-base shadow-sm md:text-base"
+              className="h-12 w-full rounded-full border border-input bg-white pr-4 pl-11 text-base shadow-sm outline-none focus-visible:ring-3 focus-visible:ring-ring"
             />
           </label>
-          <Button
+          <button
             type="button"
-            variant="outline"
             aria-pressed={mirrored}
             onClick={() => setMirrored((value) => !value)}
-            className="h-12 rounded-full px-4"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border bg-white px-4 text-sm font-medium shadow-sm outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring"
           >
-            <FlipHorizontal2 />
+            <FlipIcon />
             Зеркало
-          </Button>
+          </button>
         </form>
 
         {results.length === 0 ? (
           <div className="mx-auto mt-16 max-w-md text-center">
             <p className="text-lg font-medium">Ничего не нашлось</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              В портфолио есть «комната» и «evernote».
-            </p>
+            <p className="mt-2 text-sm text-muted-foreground">В портфолио есть «комната» и «evernote».</p>
           </div>
         ) : (
           <ul className="mt-10 grid gap-8 sm:grid-cols-2">
-            {results.map((project) => {
+            {results.map((project, index) => {
               const external = project.href.startsWith("http");
               const className =
                 "group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring";
               const card = (
                 <>
-                  <span className={`relative block aspect-[4/3] ${project.frameClass}`}>
-                    <Image
+                  <span className={`block aspect-[4/3] ${project.frameClass}`}>
+                    {/* Pre-sized static file. The image optimizer was the slow part of the first open. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={project.image}
                       alt={project.imageAlt}
-                      fill
-                      sizes="(min-width: 640px) 480px, 100vw"
-                      className="object-contain"
+                      width={project.imageWidth}
+                      height={project.imageHeight}
+                      fetchPriority={index === 0 ? "high" : "auto"}
+                      decoding="async"
+                      className="h-full w-full object-contain"
                     />
                   </span>
                   <span className="block px-4 py-3.5">
-                    <span className="block text-lg font-medium tracking-tight text-[#202124]">
-                      {project.title}
-                    </span>
+                    <span className="block text-lg font-medium tracking-tight text-[#202124]">{project.title}</span>
                     <time dateTime={project.date} className="mt-0.5 block text-sm text-[#70757a]">
                       {project.date}
                     </time>
@@ -119,10 +112,33 @@ export function PortfolioHome() {
           </ul>
         )}
 
-        <footer className="mt-auto pt-16 text-center text-xs text-muted-foreground">
-          Даня Ретивых
-        </footer>
+        <footer className="mt-auto pt-16 text-center text-xs text-muted-foreground">Даня Ретивых</footer>
       </main>
     </div>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function FlipIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 8h10a4 4 0 0 1 0 8H8" strokeLinecap="round" />
+      <path d="M8 4L4 8l4 4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
