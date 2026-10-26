@@ -60,6 +60,7 @@ export function PortfolioHome() {
       <main className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pt-10 pb-10 sm:px-6 sm:pt-14">
         <header className="mx-auto w-full max-w-xl text-center">
           <div
+            className="group"
             onMouseEnter={() => {
               if (canHover) setAboutHover(true);
             }}
@@ -93,7 +94,7 @@ export function PortfolioHome() {
             </h1>
             <div
               id="about-danya"
-              className={`grid transition-[grid-template-rows] duration-300 ease-out ${aboutOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+              className={`grid transition-[grid-template-rows] duration-300 ease-out ${aboutOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"} [@media(hover:hover)_and_(pointer:fine)]:group-hover:grid-rows-[1fr]`}
             >
               <div className="overflow-hidden">
                 <p className="mx-auto max-w-md pt-4 text-[0.98rem] leading-7 text-[#3c3832]">
