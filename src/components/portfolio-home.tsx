@@ -35,6 +35,7 @@ export function PortfolioHome() {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    document.title = lang === "en" ? "Danya Retivykh — portfolio" : "Даня Ретивых — портфолио";
   }, [lang]);
 
   function chooseSection(next: Section) {
@@ -87,7 +88,7 @@ export function PortfolioHome() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/portrait.webp"
-              alt={lang === "en" ? "Danya Retivykh" : "Даня Ретивых"}
+              alt={text.name}
               width={720}
               height={961}
               fetchPriority="high"
@@ -103,7 +104,7 @@ export function PortfolioHome() {
                 className="outline-none"
               >
                 <span className="block font-serif text-[2.75rem] leading-[0.92] font-bold tracking-[-0.035em] text-[#1c1915] sm:text-7xl">
-                  Даня Ретивых
+                  {text.name}
                 </span>
                 <span className="mt-3 block text-[0.72rem] font-medium tracking-[0.18em] text-[#8d8478] uppercase">
                   {text.aboutLabel}
@@ -220,7 +221,7 @@ export function PortfolioHome() {
         </div>
 
         <footer className="mt-auto flex flex-col items-center gap-2 pt-20 text-center">
-          <p className="text-[0.68rem] tracking-[0.2em] text-[#a3998d] uppercase">Даня Ретивых</p>
+          <p className="text-[0.68rem] tracking-[0.2em] text-[#a3998d] uppercase">{text.name}</p>
           <a
             href="mailto:danyaretivykh@gmail.com"
             className="text-sm text-[#1c1915] underline decoration-[#cfc6b6] underline-offset-4 hover:decoration-[#1c1915]"

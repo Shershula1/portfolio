@@ -16,6 +16,7 @@ export type PortfolioError =
 
 export const copy = {
   ru: {
+    name: "Даня Ретивых",
     aboutLabel: "Обо мне",
     about:
       "Проходил курсы программирования, 3D-моделирования, frontend и Roblox. Занимался акробатикой 9 лет, плаванием 2 года и карате. Уровень английского языка — B1. Учился в школе «Доверие». Родился в Санкт-Петербурге.",
@@ -65,6 +66,7 @@ export const copy = {
     },
   },
   en: {
+    name: "Danya Retivykh",
     aboutLabel: "About me",
     about:
       "I took courses in programming, 3D modeling, frontend, and Roblox. I did acrobatics for 9 years, swimming for 2 years, and karate. My English level is B1. I studied at Doverie school. I was born in Saint Petersburg.",
