@@ -1,3 +1,7 @@
+export const certificateSections = ["karate", "acrobatics", "frontend", "blender", "roblox", "scratch"] as const;
+
+export type CertificateSection = (typeof certificateSections)[number];
+
 export type Certificate = {
   id: string;
   title: string;
@@ -6,7 +10,12 @@ export type Certificate = {
   mime: string;
   previewUrl: string;
   fileUrl: string;
+  section?: CertificateSection;
 };
+
+export function isCertificateSection(value: unknown): value is CertificateSection {
+  return typeof value === "string" && (certificateSections as readonly string[]).includes(value);
+}
 
 const STORAGE_KEY = "portfolio-certificates-v1";
 
@@ -30,7 +39,12 @@ export function loadCertificates(): Certificate[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as Certificate[];
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item) => item && item.id && item.title && item.previewUrl && item.date);
+    return parsed
+      .filter((item) => item && item.id && item.title && item.previewUrl && item.date)
+      .map((item) => ({
+        ...item,
+        section: isCertificateSection(item.section) ? item.section : undefined,
+      }));
   } catch {
     return [];
   }

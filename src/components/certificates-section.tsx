@@ -3,11 +3,13 @@
 import { FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 import { prepareCertificateFile, CertificateFileError } from "@/lib/certificate-file";
 import {
+  certificateSections,
   loadCertificates,
   saveCertificates,
   stampDate,
   titleFromFileName,
   type Certificate,
+  type CertificateSection,
 } from "@/lib/certificates";
 import { copy, type Lang, type PortfolioError } from "@/lib/copy";
 
@@ -28,6 +30,8 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [fileLabel, setFileLabel] = useState<string>(copy.ru.noFileChosen);
+  const [section, setSection] = useState<CertificateSection | "">("");
+  const [sectionFilter, setSectionFilter] = useState<CertificateSection | "all">("all");
 
   useEffect(() => {
     setFileLabel((current) =>
@@ -41,10 +45,14 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
 
   const visible = useMemo(() => {
     if (!items) return [];
+    const listed = sectionFilter === "all" ? items : items.filter((item) => item.section === sectionFilter);
     const needle = query.trim().toLowerCase();
-    if (!needle) return items;
-    return items.filter((item) => `${item.title} ${item.date} грамота certificate`.toLowerCase().includes(needle));
-  }, [items, query]);
+    if (!needle) return listed;
+    return listed.filter((item) => {
+      const sectionName = item.section ? `${copy.ru.sections[item.section]} ${copy.en.sections[item.section]}` : "";
+      return `${item.title} ${item.date} ${sectionName} грамота certificate`.toLowerCase().includes(needle);
+    });
+  }, [items, query, sectionFilter]);
 
   function openDialog() {
     setStamp(stampDate(new Date()));
@@ -53,6 +61,7 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
     setError("");
     setSaving(false);
     setFileLabel(text.noFileChosen);
+    setSection("");
     if (fileRef.current) fileRef.current.value = "";
     dialogRef.current?.showModal();
   }
@@ -79,6 +88,10 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
       setError("writeCaption");
       return;
     }
+    if (!section) {
+      setError("chooseSection");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -90,12 +103,14 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
         mime: prepared.mime,
         previewUrl: prepared.previewUrl,
         fileUrl: prepared.fileUrl,
+        section,
       };
       const stored = [next, ...(items ?? [])];
       if (!saveCertificates(stored)) {
         setError("saveFailed");
         return;
       }
+      setSectionFilter(section);
       setItems(stored);
       closeDialog();
     } catch (caught) {
@@ -134,15 +149,27 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
           {text.addCertificate}
         </button>
       </div>
+      <div role="group" aria-label={text.sectionField} className="mt-5 flex flex-wrap gap-2">
+        <SectionChip pressed={sectionFilter === "all"} onClick={() => setSectionFilter("all")}>
+          {text.allSections}
+        </SectionChip>
+        {certificateSections.map((id) => (
+          <SectionChip key={id} pressed={sectionFilter === id} onClick={() => setSectionFilter(id)}>
+            {text.sections[id]}
+          </SectionChip>
+        ))}
+      </div>
 
       {items === null ? (
         <p className="mt-8 text-sm text-[#8d8478]">{text.loading}</p>
       ) : visible.length === 0 ? (
         <div className="mt-8 rounded-[1.35rem] border border-dashed border-[#d5cdbf] bg-white/45 px-6 py-14 text-center">
           <p className="font-serif text-xl font-medium text-[#1c1915]">
-            {query.trim() ? text.noneFound : text.noneYet}
+            {query.trim() ? text.noneFound : sectionFilter === "all" ? text.noneYet : text.sectionEmpty}
           </p>
-          <p className="mt-2 text-sm text-[#8d8478]">{query.trim() ? text.noneFoundHint : text.noneYetHint}</p>
+          <p className="mt-2 text-sm text-[#8d8478]">
+            {query.trim() ? text.noneFoundHint : sectionFilter === "all" ? text.noneYetHint : text.noneYetHint}
+          </p>
         </div>
       ) : (
         <ul className="mt-8 grid gap-8 sm:grid-cols-2">
@@ -158,6 +185,11 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
                   />
                 </span>
                 <span className="block px-5 pt-4 pb-5 pr-28">
+                  {item.section ? (
+                    <span className="mb-1 block text-[0.68rem] font-medium tracking-[0.14em] text-[#8d8478] uppercase">
+                      {text.sections[item.section]}
+                    </span>
+                  ) : null}
                   <span className="block truncate font-serif text-xl leading-snug font-medium tracking-tight text-[#1c1915]">
                     {item.title}
                   </span>
@@ -201,7 +233,7 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
 
       <dialog
         ref={dialogRef}
-        className="m-auto w-[min(100%-1.5rem,28rem)] rounded-[1.35rem] border border-[#e6e0d4] bg-[#fbf9f5] p-0 text-[#1c1915] shadow-[0_28px_70px_-24px_rgba(40,32,20,0.45)] backdrop:bg-[#1c1915]/35"
+        className="m-auto max-h-[calc(100%-2rem)] w-[min(100%-1.5rem,28rem)] overflow-auto rounded-[1.35rem] border border-[#e6e0d4] bg-[#fbf9f5] p-0 text-[#1c1915] shadow-[0_28px_70px_-24px_rgba(40,32,20,0.45)] backdrop:bg-[#1c1915]/35"
         onClick={(event) => {
           if (event.target === dialogRef.current) closeDialog();
         }}
@@ -211,6 +243,26 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
             <h3 className="font-serif text-2xl font-medium tracking-tight">{text.addCertificate}</h3>
             <p className="mt-1.5 text-sm text-[#8d8478]">{text.dialogHint}</p>
           </div>
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">{text.sectionField}</legend>
+            <div className="flex flex-wrap gap-2">
+              {certificateSections.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={section === id}
+                  onClick={() => setSection(id)}
+                  className={`rounded-full border px-3 py-1.5 text-sm ${
+                    section === id
+                      ? "border-[#202124] bg-[#202124] text-white"
+                      : "border-[#e4dfd4] bg-white text-[#3c3832] hover:border-[#cfc6b6]"
+                  }`}
+                >
+                  {text.sections[id]}
+                </button>
+              ))}
+            </div>
+          </fieldset>
           <div className="space-y-1.5">
             <label htmlFor={fileId} className="text-sm font-medium">
               {text.document}
@@ -267,6 +319,31 @@ export function CertificatesSection({ query, lang }: { query: string; lang: Lang
         </form>
       </dialog>
     </section>
+  );
+}
+
+function SectionChip({
+  pressed,
+  onClick,
+  children,
+}: {
+  pressed: boolean;
+  onClick: () => void;
+  children: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={pressed}
+      onClick={onClick}
+      className={`rounded-full border px-3 py-1.5 text-sm ${
+        pressed
+          ? "border-[#202124] bg-[#202124] text-white"
+          : "border-[#e4dfd4] bg-white text-[#70757a] hover:text-[#202124]"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 

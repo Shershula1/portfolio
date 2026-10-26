@@ -12,7 +12,8 @@ export type PortfolioError =
   | "pdfRead"
   | "readFailed"
   | "imagePrepare"
-  | "imageRead";
+  | "imageRead"
+  | "chooseSection";
 
 export const copy = {
   ru: {
@@ -40,6 +41,17 @@ export const copy = {
     noneFoundHint: "Попробуйте другое слово или очистите поиск.",
     noneYetHint: "Нажмите «Добавить грамоту» и загрузите документ. Дата поставится сама.",
     dialogHint: "Документ появится карточкой: снимок, подпись и дата.",
+    sectionField: "Секция",
+    allSections: "Все",
+    sectionEmpty: "В этой секции грамот пока нет",
+    sections: {
+      karate: "Карате",
+      acrobatics: "Акробатика",
+      frontend: "Frontend",
+      blender: "Blender",
+      roblox: "Roblox",
+      scratch: "Scratch",
+    },
     document: "Документ",
     choose: "Выбрать",
     noFileChosen: "Файл не выбран",
@@ -63,6 +75,7 @@ export const copy = {
       readFailed: "Не удалось прочитать документ.",
       imagePrepare: "Не удалось подготовить изображение.",
       imageRead: "Не удалось прочитать изображение.",
+      chooseSection: "Выберите секцию.",
     },
   },
   en: {
@@ -90,6 +103,17 @@ export const copy = {
     noneFoundHint: "Try another word or clear the search.",
     noneYetHint: "Press “Add a certificate” and upload a document. The date is added automatically.",
     dialogHint: "The document becomes a card: a picture, a caption, and a date.",
+    sectionField: "Section",
+    allSections: "All",
+    sectionEmpty: "No certificates in this section yet",
+    sections: {
+      karate: "Karate",
+      acrobatics: "Acrobatics",
+      frontend: "Frontend",
+      blender: "Blender",
+      roblox: "Roblox",
+      scratch: "Scratch",
+    },
     document: "Document",
     choose: "Choose",
     noFileChosen: "No file chosen",
@@ -113,6 +137,7 @@ export const copy = {
       readFailed: "Could not read the document.",
       imagePrepare: "Could not prepare the image.",
       imageRead: "Could not read the image.",
+      chooseSection: "Choose a section.",
     },
   },
 } as const;
