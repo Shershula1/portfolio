@@ -50,9 +50,6 @@ export function PortfolioHome() {
         <header className="mx-auto w-full max-w-xl text-center">
           <p className="text-sm text-muted-foreground">Даня Ретивых</p>
           <h1 className="mt-2 text-4xl font-medium tracking-tight sm:text-5xl">Портфолио</h1>
-          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-            Сайты и грамоты. На карточке снимок, подпись и дата.
-          </p>
         </header>
         <div
           role="group"
