@@ -112,7 +112,7 @@ export function CertificatesSection({ query }: { query: string }) {
   }
 
   return (
-    <section id="certificates" className="mt-14 scroll-mt-8">
+    <section id="certificates" className="mt-10">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <h2 className="text-2xl font-medium tracking-tight">Грамоты</h2>
         <button

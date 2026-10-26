@@ -1,10 +1,12 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CertificatesSection } from "@/components/certificates-section";
 import { projects } from "@/data/projects";
+
+type Section = "sites" | "certificates";
 
 const cardClass =
   "group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring";
@@ -13,6 +15,17 @@ export function PortfolioHome() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [mirrored, setMirrored] = useState(false);
+  const [section, setSection] = useState<Section>("sites");
+
+  useEffect(() => {
+    if (window.location.hash === "#certificates") setSection("certificates");
+  }, []);
+
+  function chooseSection(next: Section) {
+    setSection(next);
+    const hash = next === "certificates" ? "#certificates" : "#sites";
+    if (window.location.hash !== hash) history.replaceState(null, "", hash);
+  }
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -41,14 +54,18 @@ export function PortfolioHome() {
             Сайты и грамоты. На карточке снимок, подпись и дата.
           </p>
         </header>
-        <nav className="mx-auto mt-6 flex justify-center gap-2 text-sm" aria-label="Разделы">
-          <a href="#sites" className="rounded-full border bg-white px-4 py-1.5 hover:bg-muted">
+        <div
+          role="group"
+          aria-label="Раздел"
+          className="mx-auto mt-6 flex w-fit gap-1 rounded-full border border-white/10 bg-[#0a0a0c] p-1"
+        >
+          <SectionButton pressed={section === "sites"} onClick={() => chooseSection("sites")}>
             Сайты
-          </a>
-          <a href="#certificates" className="rounded-full border bg-white px-4 py-1.5 hover:bg-muted">
+          </SectionButton>
+          <SectionButton pressed={section === "certificates"} onClick={() => chooseSection("certificates")}>
             Грамоты
-          </a>
-        </nav>
+          </SectionButton>
+        </div>
 
         <form onSubmit={onSubmit} className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
           <label className="relative min-w-0 flex-1">
@@ -73,7 +90,7 @@ export function PortfolioHome() {
           </button>
         </form>
 
-        <section id="sites" className="mt-10 scroll-mt-8">
+        <section id="sites" hidden={section !== "sites"} className="mt-10">
           <h2 className="text-2xl font-medium tracking-tight">Сайты</h2>
           {results.length === 0 ? (
             <div className="mt-8 rounded-2xl border border-dashed px-6 py-12 text-center">
@@ -124,11 +141,38 @@ export function PortfolioHome() {
           )}
         </section>
 
-        <CertificatesSection query={query} />
+        <div hidden={section !== "certificates"}>
+          <CertificatesSection query={query} />
+        </div>
 
         <footer className="mt-auto pt-16 text-center text-xs text-muted-foreground">Даня Ретивых</footer>
       </main>
     </div>
+  );
+}
+
+function SectionButton({
+  pressed,
+  onClick,
+  children,
+}: {
+  pressed: boolean;
+  onClick: () => void;
+  children: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={pressed}
+      onClick={onClick}
+      className={`rounded-full border px-4 py-1.5 text-sm ${
+        pressed
+          ? "border-[#e4ff3d] bg-[#e4ff3d] text-[#14140a]"
+          : "border-white/15 bg-transparent text-[#e6e6e6] hover:border-white/40"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 
