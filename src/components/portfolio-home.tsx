@@ -62,10 +62,20 @@ export function PortfolioHome() {
   }
 
   return (
-    <div
-      className={`min-h-dvh bg-[#f3efe6] text-[#1c1915] ${mirrored ? "origin-center [transform:scaleX(-1)]" : ""}`}
-    >
-      <main className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pt-10 pb-10 sm:px-6 sm:pt-14">
+    <div className="min-h-dvh bg-[#f3efe6] text-[#1c1915]">
+      <button
+        type="button"
+        onClick={() => {
+          setLang((current) => (current === "ru" ? "en" : "ru"));
+          setAboutPinned(true);
+        }}
+        aria-label={text.translateLabel}
+        className="fixed top-4 right-4 z-20 inline-flex h-14 items-center rounded-full border border-[#e4dfd4] bg-white px-6 text-lg font-semibold text-[#1c1915] shadow-[0_10px_28px_-16px_rgba(40,32,20,0.45)] outline-none hover:bg-[#fbf9f5] focus-visible:ring-3 focus-visible:ring-[#202124]/12 sm:top-6 sm:right-6 sm:h-16 sm:px-8 sm:text-xl"
+      >
+        {text.translate}
+      </button>
+      <div className={mirrored ? "origin-center [transform:scaleX(-1)]" : undefined}>
+      <main className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 pt-24 pb-10 sm:px-6 sm:pt-14">
         <header className="mx-auto w-full max-w-xl text-center">
           <div
             className="group"
@@ -111,17 +121,6 @@ export function PortfolioHome() {
           </div>
           <p className="mt-8 font-serif text-3xl font-medium tracking-tight text-[#1c1915] sm:text-4xl">{text.portfolio}</p>
           <span aria-hidden className="mx-auto mt-5 block h-px w-12 bg-[#cfc6b6]" />
-          <button
-            type="button"
-            onClick={() => {
-              setLang((current) => (current === "ru" ? "en" : "ru"));
-              setAboutPinned(true);
-            }}
-            aria-label={text.translateLabel}
-            className="mt-5 inline-flex h-10 items-center rounded-full border border-[#e4dfd4] bg-white px-4 text-sm font-medium text-[#1c1915] shadow-[0_1px_2px_rgba(70,55,30,0.04)] outline-none hover:bg-[#fbf9f5] focus-visible:ring-3 focus-visible:ring-[#202124]/12"
-          >
-            {text.translate}
-          </button>
         </header>
         <div
           role="group"
@@ -230,6 +229,7 @@ export function PortfolioHome() {
           </a>
         </footer>
       </main>
+      </div>
     </div>
   );
 }
