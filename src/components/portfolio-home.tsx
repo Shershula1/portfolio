@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CertificatesSection } from "@/components/certificates-section";
 import { projects } from "@/data/projects";
+import { copy, type Lang } from "@/lib/copy";
 
 type Section = "sites" | "certificates";
 
@@ -19,7 +20,9 @@ export function PortfolioHome() {
   const [aboutPinned, setAboutPinned] = useState(false);
   const [aboutHover, setAboutHover] = useState(false);
   const [canHover, setCanHover] = useState(false);
+  const [lang, setLang] = useState<Lang>("ru");
   const aboutOpen = aboutPinned || aboutHover;
+  const text = copy[lang];
 
   useEffect(() => {
     if (window.location.hash === "#certificates") setSection("certificates");
@@ -29,6 +32,10 @@ export function PortfolioHome() {
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   function chooseSection(next: Section) {
     setSection(next);
@@ -40,10 +47,11 @@ export function PortfolioHome() {
     const needle = query.trim().toLowerCase();
     if (!needle) return projects;
     return projects.filter((project) => {
-      const haystack = [project.title, project.date, ...project.keywords].join(" ").toLowerCase();
+      const titles = project.slug === "room" ? [project.title, text.roomTitle] : [project.title];
+      const haystack = [...titles, project.date, ...project.keywords].join(" ").toLowerCase();
       return haystack.includes(needle);
     });
-  }, [query]);
+  }, [query, text.roomTitle]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,7 +77,7 @@ export function PortfolioHome() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/portrait.webp"
-              alt="Даня Ретивых"
+              alt={lang === "en" ? "Danya Retivykh" : "Даня Ретивых"}
               width={720}
               height={961}
               fetchPriority="high"
@@ -88,7 +96,7 @@ export function PortfolioHome() {
                   Даня Ретивых
                 </span>
                 <span className="mt-3 block text-[0.72rem] font-medium tracking-[0.18em] text-[#8d8478] uppercase">
-                  Обо мне
+                  {text.aboutLabel}
                 </span>
               </button>
             </h1>
@@ -97,38 +105,45 @@ export function PortfolioHome() {
               className={`grid transition-[grid-template-rows] duration-300 ease-out ${aboutOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"} [@media(hover:hover)_and_(pointer:fine)]:group-hover:grid-rows-[1fr]`}
             >
               <div className="overflow-hidden">
-                <p className="mx-auto max-w-md pt-4 text-[0.98rem] leading-7 text-[#3c3832]">
-                  Проходил курсы программирования, 3D-моделирования, frontend и Roblox. Занимался акробатикой 9 лет и
-                  плаванием 2 года. Уровень английского языка — B1. Учился в школе «Доверие». Родился в
-                  Санкт-Петербурге.
-                </p>
+                <p className="mx-auto max-w-md pt-4 text-[0.98rem] leading-7 text-[#3c3832]">{text.about}</p>
               </div>
             </div>
           </div>
-          <p className="mt-8 font-serif text-3xl font-medium tracking-tight text-[#1c1915] sm:text-4xl">Портфолио</p>
+          <p className="mt-8 font-serif text-3xl font-medium tracking-tight text-[#1c1915] sm:text-4xl">{text.portfolio}</p>
           <span aria-hidden className="mx-auto mt-5 block h-px w-12 bg-[#cfc6b6]" />
+          <button
+            type="button"
+            onClick={() => {
+              setLang((current) => (current === "ru" ? "en" : "ru"));
+              setAboutPinned(true);
+            }}
+            aria-label={text.translateLabel}
+            className="mt-5 inline-flex h-10 items-center rounded-full border border-[#e4dfd4] bg-white px-4 text-sm font-medium text-[#1c1915] shadow-[0_1px_2px_rgba(70,55,30,0.04)] outline-none hover:bg-[#fbf9f5] focus-visible:ring-3 focus-visible:ring-[#202124]/12"
+          >
+            {text.translate}
+          </button>
         </header>
         <div
           role="group"
-          aria-label="Раздел"
+          aria-label={text.section}
           className="mx-auto mt-6 flex w-fit gap-1 rounded-full border border-[#dadce0] bg-white p-1 shadow-[0_1px_2px_rgba(60,64,67,0.08)]"
         >
           <SectionButton pressed={section === "sites"} onClick={() => chooseSection("sites")}>
-            Сайты
+            {text.sites}
           </SectionButton>
           <SectionButton pressed={section === "certificates"} onClick={() => chooseSection("certificates")}>
-            Грамоты
+            {text.certificates}
           </SectionButton>
         </div>
 
         <form onSubmit={onSubmit} className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
           <label className="relative min-w-0 flex-1">
-            <span className="sr-only">Поиск</span>
+            <span className="sr-only">{text.search}</span>
             <SearchIcon />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Поиск"
+              placeholder={text.search}
               type="search"
               className="h-12 w-full rounded-full border border-[#e4dfd4] bg-white/90 pr-4 pl-11 text-base text-[#1c1915] shadow-[0_1px_2px_rgba(70,55,30,0.04)] outline-none placeholder:text-[#a3998d] focus-visible:border-[#c9c0b2] focus-visible:ring-3 focus-visible:ring-[#202124]/12"
             />
@@ -144,16 +159,16 @@ export function PortfolioHome() {
             }`}
           >
             <FlipIcon />
-            Зеркало
+            {text.mirror}
           </button>
         </form>
 
         <section id="sites" hidden={section !== "sites"} className="mt-10">
-          <h2 className="font-serif text-[1.65rem] font-medium tracking-tight text-[#1c1915]">Сайты</h2>
+          <h2 className="font-serif text-[1.65rem] font-medium tracking-tight text-[#1c1915]">{text.sites}</h2>
           {results.length === 0 ? (
             <div className="mt-8 rounded-[1.35rem] border border-dashed border-[#d5cdbf] bg-white/45 px-6 py-14 text-center">
-              <p className="font-serif text-xl font-medium">В сайтах ничего не нашлось</p>
-              <p className="mt-2 text-sm text-[#8d8478]">Есть «комната» и «evernote».</p>
+              <p className="font-serif text-xl font-medium">{text.sitesEmpty}</p>
+              <p className="mt-2 text-sm text-[#8d8478]">{text.sitesHint}</p>
             </div>
           ) : (
             <ul className="mt-8 grid gap-8 sm:grid-cols-2">
@@ -165,7 +180,7 @@ export function PortfolioHome() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={project.image}
-                        alt={project.imageAlt}
+                        alt={project.slug === "room" ? text.roomAlt : project.imageAlt}
                         width={project.imageWidth}
                         height={project.imageHeight}
                         fetchPriority={index === 0 ? "high" : "auto"}
@@ -175,7 +190,7 @@ export function PortfolioHome() {
                     </span>
                     <span className="block px-5 pt-4 pb-5">
                       <span className="block font-serif text-xl leading-snug font-medium tracking-tight text-[#1c1915]">
-                        {project.title}
+                        {project.slug === "room" ? text.roomTitle : project.title}
                       </span>
                       <time dateTime={project.dateTime} className="mt-1.5 block text-[0.75rem] tracking-[0.06em] text-[#8d8478]">
                         {project.date}
@@ -202,7 +217,7 @@ export function PortfolioHome() {
         </section>
 
         <div hidden={section !== "certificates"}>
-          <CertificatesSection query={query} />
+          <CertificatesSection query={query} lang={lang} />
         </div>
 
         <footer className="mt-auto flex flex-col items-center gap-2 pt-20 text-center">

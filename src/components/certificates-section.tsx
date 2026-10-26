@@ -9,11 +9,13 @@ import {
   titleFromFileName,
   type Certificate,
 } from "@/lib/certificates";
+import { copy, type Lang, type PortfolioError } from "@/lib/copy";
 
 const cardClass =
   "group block overflow-hidden rounded-[1.35rem] border border-[#e6e0d4] bg-white shadow-[0_1px_1px_rgba(70,55,30,0.04),0_16px_36px_-22px_rgba(70,55,30,0.35)] outline-none transition duration-200 motion-safe:hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(70,55,30,0.32)] focus-visible:ring-3 focus-visible:ring-[#202124]/15";
 
-export function CertificatesSection({ query }: { query: string }) {
+export function CertificatesSection({ query, lang }: { query: string; lang: Lang }) {
+  const text = copy[lang];
   const dialogRef = useRef<HTMLDialogElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
@@ -22,10 +24,16 @@ export function CertificatesSection({ query }: { query: string }) {
   const [title, setTitle] = useState("");
   const [titleEdited, setTitleEdited] = useState(false);
   const [stamp, setStamp] = useState(() => stampDate(new Date()));
-  const [error, setError] = useState("");
+  const [error, setError] = useState<PortfolioError | "">("");
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
-  const [fileLabel, setFileLabel] = useState("Файл не выбран");
+  const [fileLabel, setFileLabel] = useState<string>(copy.ru.noFileChosen);
+
+  useEffect(() => {
+    setFileLabel((current) =>
+      current === copy.ru.noFileChosen || current === copy.en.noFileChosen ? copy[lang].noFileChosen : current,
+    );
+  }, [lang]);
 
   useEffect(() => {
     setItems(loadCertificates());
@@ -35,7 +43,7 @@ export function CertificatesSection({ query }: { query: string }) {
     if (!items) return [];
     const needle = query.trim().toLowerCase();
     if (!needle) return items;
-    return items.filter((item) => `${item.title} ${item.date} грамота`.toLowerCase().includes(needle));
+    return items.filter((item) => `${item.title} ${item.date} грамота certificate`.toLowerCase().includes(needle));
   }, [items, query]);
 
   function openDialog() {
@@ -44,7 +52,7 @@ export function CertificatesSection({ query }: { query: string }) {
     setTitleEdited(false);
     setError("");
     setSaving(false);
-    setFileLabel("Файл не выбран");
+    setFileLabel(text.noFileChosen);
     if (fileRef.current) fileRef.current.value = "";
     dialogRef.current?.showModal();
   }
@@ -54,7 +62,7 @@ export function CertificatesSection({ query }: { query: string }) {
   }
 
   function onFileChange(file: File | undefined) {
-    setFileLabel(file ? file.name : "Файл не выбран");
+    setFileLabel(file ? file.name : text.noFileChosen);
     if (!file || titleEdited) return;
     setTitle(titleFromFileName(file.name));
   }
@@ -64,11 +72,11 @@ export function CertificatesSection({ query }: { query: string }) {
     const file = fileRef.current?.files?.[0];
     const caption = title.trim();
     if (!file) {
-      setError("Выберите документ.");
+      setError("chooseFile");
       return;
     }
     if (!caption) {
-      setError("Напишите подпись.");
+      setError("writeCaption");
       return;
     }
     setSaving(true);
@@ -85,13 +93,13 @@ export function CertificatesSection({ query }: { query: string }) {
       };
       const stored = [next, ...(items ?? [])];
       if (!saveCertificates(stored)) {
-        setError("Браузер не сохранил грамоту: документ слишком большой для памяти этой страницы.");
+        setError("saveFailed");
         return;
       }
       setItems(stored);
       closeDialog();
     } catch (caught) {
-      setError(caught instanceof CertificateFileError ? caught.message : "Не удалось добавить грамоту.");
+      setError(caught instanceof CertificateFileError ? caught.code : "addFailed");
     } finally {
       setSaving(false);
     }
@@ -100,7 +108,7 @@ export function CertificatesSection({ query }: { query: string }) {
   function remove(id: string) {
     const stored = (items ?? []).filter((item) => item.id !== id);
     if (!saveCertificates(stored)) {
-      setError("Не удалось удалить грамоту.");
+      setError("deleteFailed");
       return;
     }
     setItems(stored);
@@ -117,28 +125,24 @@ export function CertificatesSection({ query }: { query: string }) {
   return (
     <section id="certificates" className="mt-10">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <h2 className="font-serif text-[1.65rem] font-medium tracking-tight text-[#1c1915]">Грамоты</h2>
+        <h2 className="font-serif text-[1.65rem] font-medium tracking-tight text-[#1c1915]">{text.certificatesHeading}</h2>
         <button
           type="button"
           onClick={openDialog}
           className="inline-flex h-11 items-center justify-center rounded-full bg-[#202124] px-5 text-sm font-medium text-white shadow-[0_8px_20px_-12px_rgba(28,25,21,0.8)] outline-none hover:bg-[#111] focus-visible:ring-3 focus-visible:ring-[#202124]/20"
         >
-          Добавить грамоту
+          {text.addCertificate}
         </button>
       </div>
 
       {items === null ? (
-        <p className="mt-8 text-sm text-[#8d8478]">Загружаю грамоты…</p>
+        <p className="mt-8 text-sm text-[#8d8478]">{text.loading}</p>
       ) : visible.length === 0 ? (
         <div className="mt-8 rounded-[1.35rem] border border-dashed border-[#d5cdbf] bg-white/45 px-6 py-14 text-center">
           <p className="font-serif text-xl font-medium text-[#1c1915]">
-            {query.trim() ? "В грамотах ничего не нашлось" : "Грамот пока нет"}
+            {query.trim() ? text.noneFound : text.noneYet}
           </p>
-          <p className="mt-2 text-sm text-[#8d8478]">
-            {query.trim()
-              ? "Попробуйте другое слово или очистите поиск."
-              : "Нажмите «Добавить грамоту» и загрузите документ. Дата поставится сама."}
-          </p>
+          <p className="mt-2 text-sm text-[#8d8478]">{query.trim() ? text.noneFoundHint : text.noneYetHint}</p>
         </div>
       ) : (
         <ul className="mt-8 grid gap-8 sm:grid-cols-2">
@@ -170,14 +174,14 @@ export function CertificatesSection({ query }: { query: string }) {
                       onClick={() => remove(item.id)}
                       className="rounded-full bg-red-700 px-3 py-1 text-xs font-medium text-white"
                     >
-                      Удалить
+                      {text.remove}
                     </button>
                     <button
                       type="button"
                       onClick={() => setPendingDelete(null)}
                       className="rounded-full border border-[#e6e0d4] bg-white px-3 py-1 text-xs text-[#3c3832]"
                     >
-                      Отмена
+                      {text.cancel}
                     </button>
                   </span>
                 ) : (
@@ -186,7 +190,7 @@ export function CertificatesSection({ query }: { query: string }) {
                     onClick={() => setPendingDelete(item.id)}
                     className="rounded-full border border-[#e6e0d4] bg-white/95 px-3 py-1 text-xs text-[#8d8478] shadow-sm hover:text-[#202124]"
                   >
-                    Удалить
+                    {text.remove}
                   </button>
                 )}
               </div>
@@ -204,18 +208,18 @@ export function CertificatesSection({ query }: { query: string }) {
       >
         <form onSubmit={onSubmit} className="space-y-4 p-6">
           <div>
-            <h3 className="font-serif text-2xl font-medium tracking-tight">Добавить грамоту</h3>
-            <p className="mt-1.5 text-sm text-[#8d8478]">Документ появится карточкой: снимок, подпись и дата.</p>
+            <h3 className="font-serif text-2xl font-medium tracking-tight">{text.addCertificate}</h3>
+            <p className="mt-1.5 text-sm text-[#8d8478]">{text.dialogHint}</p>
           </div>
           <div className="space-y-1.5">
             <label htmlFor={fileId} className="text-sm font-medium">
-              Документ
+              {text.document}
             </label>
             <label
               htmlFor={fileId}
               className="flex h-12 cursor-pointer items-center gap-3 rounded-xl border border-[#e4dfd4] bg-white pr-3 pl-1.5 has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-[#202124]/12"
             >
-              <span className="shrink-0 rounded-full bg-[#efeae1] px-3 py-1.5 text-sm font-medium">Выбрать</span>
+              <span className="shrink-0 rounded-full bg-[#efeae1] px-3 py-1.5 text-sm font-medium">{text.choose}</span>
               <span className="truncate text-sm text-[#8d8478]">{fileLabel}</span>
             </label>
             <input
@@ -228,7 +232,7 @@ export function CertificatesSection({ query }: { query: string }) {
             />
           </div>
           <label htmlFor={titleId} className="block space-y-1.5">
-            <span className="text-sm font-medium">Подпись</span>
+            <span className="text-sm font-medium">{text.caption}</span>
             <input
               id={titleId}
               value={title}
@@ -236,28 +240,28 @@ export function CertificatesSection({ query }: { query: string }) {
                 setTitleEdited(true);
                 setTitle(event.target.value);
               }}
-              placeholder="Например, олимпиада"
+              placeholder={text.captionPlaceholder}
               className="h-11 w-full rounded-xl border border-[#e4dfd4] bg-white px-3 text-base outline-none focus-visible:border-[#c9c0b2] focus-visible:ring-3 focus-visible:ring-[#202124]/12"
             />
           </label>
           <p className="text-sm text-[#8d8478]">
-            Дата поставится сама: <time dateTime={stamp.dateTime}>{stamp.date}</time>
+            {text.dateAuto} <time dateTime={stamp.dateTime}>{stamp.date}</time>
           </p>
           {error ? (
             <p role="alert" className="text-sm text-red-700">
-              {error}
+              {text.errors[error]}
             </p>
           ) : null}
           <div className="flex justify-end gap-2">
             <button type="button" onClick={closeDialog} className="h-10 rounded-full px-4 text-sm text-[#3c3832] hover:bg-[#efeae1]">
-              Отмена
+              {text.cancel}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="h-10 rounded-full bg-[#202124] px-4 text-sm font-medium text-white disabled:opacity-60"
             >
-              {saving ? "Сохраняю…" : "Сохранить"}
+              {saving ? text.saving : text.save}
             </button>
           </div>
         </form>

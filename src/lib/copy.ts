@@ -1,0 +1,116 @@
+export type Lang = "ru" | "en";
+
+export type PortfolioError =
+  | "chooseFile"
+  | "writeCaption"
+  | "saveFailed"
+  | "addFailed"
+  | "deleteFailed"
+  | "tooBig"
+  | "needDoc"
+  | "pdfPage"
+  | "pdfRead"
+  | "readFailed"
+  | "imagePrepare"
+  | "imageRead";
+
+export const copy = {
+  ru: {
+    aboutLabel: "Обо мне",
+    about:
+      "Проходил курсы программирования, 3D-моделирования, frontend и Roblox. Занимался акробатикой 9 лет, плаванием 2 года и карате. Уровень английского языка — B1. Учился в школе «Доверие». Родился в Санкт-Петербурге.",
+    portfolio: "Портфолио",
+    translate: "English",
+    translateLabel: "Перевести текст на английский",
+    section: "Раздел",
+    sites: "Сайты",
+    certificates: "Грамоты",
+    search: "Поиск",
+    mirror: "Зеркало",
+    sitesEmpty: "В сайтах ничего не нашлось",
+    sitesHint: "Есть «комната» и «evernote».",
+    roomTitle: "Неосвещаемая комната",
+    roomAlt: "Овальная зеркальная комната: жёлтые лучи на чёрном фоне и тёмные карманы",
+    certificatesHeading: "Грамоты",
+    addCertificate: "Добавить грамоту",
+    loading: "Загружаю грамоты…",
+    noneFound: "В грамотах ничего не нашлось",
+    noneYet: "Грамот пока нет",
+    noneFoundHint: "Попробуйте другое слово или очистите поиск.",
+    noneYetHint: "Нажмите «Добавить грамоту» и загрузите документ. Дата поставится сама.",
+    dialogHint: "Документ появится карточкой: снимок, подпись и дата.",
+    document: "Документ",
+    choose: "Выбрать",
+    noFileChosen: "Файл не выбран",
+    caption: "Подпись",
+    captionPlaceholder: "Например, олимпиада",
+    dateAuto: "Дата поставится сама:",
+    cancel: "Отмена",
+    save: "Сохранить",
+    saving: "Сохраняю…",
+    remove: "Удалить",
+    errors: {
+      chooseFile: "Выберите документ.",
+      writeCaption: "Напишите подпись.",
+      saveFailed: "Браузер не сохранил грамоту: документ слишком большой для памяти этой страницы.",
+      addFailed: "Не удалось добавить грамоту.",
+      deleteFailed: "Не удалось удалить грамоту.",
+      tooBig: "Файл больше 4 МБ. Выберите документ меньше.",
+      needDoc: "Нужен документ: изображение или PDF.",
+      pdfPage: "Не удалось подготовить страницу PDF.",
+      pdfRead: "Не удалось прочитать PDF. Если он закрыт паролем, загрузите изображение.",
+      readFailed: "Не удалось прочитать документ.",
+      imagePrepare: "Не удалось подготовить изображение.",
+      imageRead: "Не удалось прочитать изображение.",
+    },
+  },
+  en: {
+    aboutLabel: "About me",
+    about:
+      "I took courses in programming, 3D modeling, frontend, and Roblox. I did acrobatics for 9 years, swimming for 2 years, and karate. My English level is B1. I studied at Doverie school. I was born in Saint Petersburg.",
+    portfolio: "Portfolio",
+    translate: "Русский",
+    translateLabel: "Translate the text back to Russian",
+    section: "Section",
+    sites: "Sites",
+    certificates: "Certificates",
+    search: "Search",
+    mirror: "Mirror",
+    sitesEmpty: "No sites match",
+    sitesHint: "Try “room” or “evernote”.",
+    roomTitle: "Unilluminable room",
+    roomAlt: "An oval mirrored room: yellow rays on black and dark pockets",
+    certificatesHeading: "Certificates",
+    addCertificate: "Add a certificate",
+    loading: "Loading certificates…",
+    noneFound: "No certificates match",
+    noneYet: "No certificates yet",
+    noneFoundHint: "Try another word or clear the search.",
+    noneYetHint: "Press “Add a certificate” and upload a document. The date is added automatically.",
+    dialogHint: "The document becomes a card: a picture, a caption, and a date.",
+    document: "Document",
+    choose: "Choose",
+    noFileChosen: "No file chosen",
+    caption: "Caption",
+    captionPlaceholder: "For example, a competition",
+    dateAuto: "The date is added automatically:",
+    cancel: "Cancel",
+    save: "Save",
+    saving: "Saving…",
+    remove: "Delete",
+    errors: {
+      chooseFile: "Choose a document.",
+      writeCaption: "Write a caption.",
+      saveFailed: "The browser could not save the certificate: the document is too large for this page.",
+      addFailed: "Could not add the certificate.",
+      deleteFailed: "Could not delete the certificate.",
+      tooBig: "The file is larger than 4 MB. Choose a smaller document.",
+      needDoc: "Use an image or a PDF.",
+      pdfPage: "Could not prepare the PDF page.",
+      pdfRead: "Could not read the PDF. If it has a password, upload an image.",
+      readFailed: "Could not read the document.",
+      imagePrepare: "Could not prepare the image.",
+      imageRead: "Could not read the image.",
+    },
+  },
+} as const;

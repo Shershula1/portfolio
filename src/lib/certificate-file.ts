@@ -1,6 +1,14 @@
 const MAX_BYTES = 4 * 1024 * 1024;
 
-export class CertificateFileError extends Error {}
+export class CertificateFileError extends Error {
+  constructor(
+    message: string,
+    readonly code: "tooBig" | "needDoc" | "pdfPage" | "pdfRead" | "readFailed" | "imagePrepare" | "imageRead",
+  ) {
+    super(message);
+    this.name = "CertificateFileError";
+  }
+}
 
 export async function prepareCertificateFile(file: File): Promise<{
   mime: string;
@@ -8,7 +16,7 @@ export async function prepareCertificateFile(file: File): Promise<{
   fileUrl: string;
 }> {
   if (file.size > MAX_BYTES) {
-    throw new CertificateFileError("Файл больше 4 МБ. Выберите документ меньше.");
+    throw new CertificateFileError("Файл больше 4 МБ. Выберите документ меньше.", "tooBig");
   }
   if (file.type.startsWith("image/")) {
     const previewUrl = await imagePreview(file);
@@ -18,14 +26,14 @@ export async function prepareCertificateFile(file: File): Promise<{
     const [previewUrl, fileUrl] = await Promise.all([pdfPreview(file), readAsDataUrl(file)]);
     return { mime: "application/pdf", previewUrl, fileUrl };
   }
-  throw new CertificateFileError("Нужен документ: изображение или PDF.");
+  throw new CertificateFileError("Нужен документ: изображение или PDF.", "needDoc");
 }
 
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new CertificateFileError("Не удалось прочитать документ."));
+    reader.onerror = () => reject(new CertificateFileError("Не удалось прочитать документ.", "readFailed"));
     reader.readAsDataURL(file);
   });
 }
@@ -43,7 +51,7 @@ function imagePreview(file: File): Promise<string> {
       const context = canvas.getContext("2d");
       if (!context) {
         URL.revokeObjectURL(url);
-        reject(new CertificateFileError("Не удалось подготовить изображение."));
+        reject(new CertificateFileError("Не удалось подготовить изображение.", "imagePrepare"));
         return;
       }
       context.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -52,7 +60,7 @@ function imagePreview(file: File): Promise<string> {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new CertificateFileError("Не удалось прочитать изображение."));
+      reject(new CertificateFileError("Не удалось прочитать изображение.", "imageRead"));
     };
     image.src = url;
   });
@@ -72,12 +80,15 @@ async function pdfPreview(file: File): Promise<string> {
     canvas.width = Math.max(1, Math.floor(viewport.width));
     canvas.height = Math.max(1, Math.floor(viewport.height));
     const context = canvas.getContext("2d");
-    if (!context) throw new CertificateFileError("Не удалось подготовить страницу PDF.");
+    if (!context) throw new CertificateFileError("Не удалось подготовить страницу PDF.", "pdfPage");
     await page.render({ canvasContext: context, canvas, viewport }).promise;
     return canvas.toDataURL("image/jpeg", 0.84);
   } catch (error) {
     if (error instanceof CertificateFileError) throw error;
-    throw new CertificateFileError("Не удалось прочитать PDF. Если он закрыт паролем, загрузите изображение.");
+    throw new CertificateFileError(
+      "Не удалось прочитать PDF. Если он закрыт паролем, загрузите изображение.",
+      "pdfRead",
+    );
   } finally {
     await task.destroy();
   }
