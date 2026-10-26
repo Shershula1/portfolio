@@ -25,6 +25,7 @@ export function CertificatesSection({ query }: { query: string }) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+  const [fileLabel, setFileLabel] = useState("Файл не выбран");
 
   useEffect(() => {
     setItems(loadCertificates());
@@ -43,6 +44,7 @@ export function CertificatesSection({ query }: { query: string }) {
     setTitleEdited(false);
     setError("");
     setSaving(false);
+    setFileLabel("Файл не выбран");
     if (fileRef.current) fileRef.current.value = "";
     dialogRef.current?.showModal();
   }
@@ -52,6 +54,7 @@ export function CertificatesSection({ query }: { query: string }) {
   }
 
   function onFileChange(file: File | undefined) {
+    setFileLabel(file ? file.name : "Файл не выбран");
     if (!file || titleEdited) return;
     setTitle(titleFromFileName(file.name));
   }
@@ -194,7 +197,7 @@ export function CertificatesSection({ query }: { query: string }) {
 
       <dialog
         ref={dialogRef}
-        className="w-[min(100%-1.5rem,28rem)] rounded-[1.35rem] border border-[#e6e0d4] bg-[#fbf9f5] p-0 text-[#1c1915] shadow-[0_28px_70px_-24px_rgba(40,32,20,0.45)] backdrop:bg-[#1c1915]/40"
+        className="m-auto w-[min(100%-1.5rem,28rem)] rounded-[1.35rem] border border-[#e6e0d4] bg-[#fbf9f5] p-0 text-[#1c1915] shadow-[0_28px_70px_-24px_rgba(40,32,20,0.45)] backdrop:bg-[#1c1915]/35"
         onClick={(event) => {
           if (event.target === dialogRef.current) closeDialog();
         }}
@@ -204,17 +207,26 @@ export function CertificatesSection({ query }: { query: string }) {
             <h3 className="font-serif text-2xl font-medium tracking-tight">Добавить грамоту</h3>
             <p className="mt-1.5 text-sm text-[#8d8478]">Документ появится карточкой: снимок, подпись и дата.</p>
           </div>
-          <label htmlFor={fileId} className="block space-y-1.5">
-            <span className="text-sm font-medium">Документ</span>
+          <div className="space-y-1.5">
+            <label htmlFor={fileId} className="text-sm font-medium">
+              Документ
+            </label>
+            <label
+              htmlFor={fileId}
+              className="flex h-12 cursor-pointer items-center gap-3 rounded-xl border border-[#e4dfd4] bg-white pr-3 pl-1.5 has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-[#202124]/12"
+            >
+              <span className="shrink-0 rounded-full bg-[#efeae1] px-3 py-1.5 text-sm font-medium">Выбрать</span>
+              <span className="truncate text-sm text-[#8d8478]">{fileLabel}</span>
+            </label>
             <input
               id={fileId}
               ref={fileRef}
               type="file"
               accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf"
               onChange={(event) => onFileChange(event.target.files?.[0])}
-              className="block w-full text-sm text-[#3c3832] file:mr-3 file:rounded-full file:border-0 file:bg-[#efeae1] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[#1c1915]"
+              className="sr-only"
             />
-          </label>
+          </div>
           <label htmlFor={titleId} className="block space-y-1.5">
             <span className="text-sm font-medium">Подпись</span>
             <input
