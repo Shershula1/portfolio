@@ -57,7 +57,7 @@ export function PortfolioHome() {
         <div
           role="group"
           aria-label="Раздел"
-          className="mx-auto mt-6 flex w-fit gap-1 rounded-full border border-white/10 bg-[#0a0a0c] p-1"
+          className="mx-auto mt-6 flex w-fit gap-1 rounded-full border border-[#dadce0] bg-white p-1 shadow-[0_1px_2px_rgba(60,64,67,0.12)]"
         >
           <SectionButton pressed={section === "sites"} onClick={() => chooseSection("sites")}>
             Сайты
@@ -167,8 +167,8 @@ function SectionButton({
       onClick={onClick}
       className={`rounded-full border px-4 py-1.5 text-sm ${
         pressed
-          ? "border-[#e4ff3d] bg-[#e4ff3d] text-[#14140a]"
-          : "border-white/15 bg-transparent text-[#e6e6e6] hover:border-white/40"
+          ? "border-[#202124] bg-[#202124] text-white"
+          : "border-transparent bg-transparent text-[#70757a] hover:text-[#202124]"
       }`}
     >
       {children}
