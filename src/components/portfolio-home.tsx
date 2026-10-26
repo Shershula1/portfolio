@@ -3,7 +3,11 @@
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CertificatesSection } from "@/components/certificates-section";
 import { projects } from "@/data/projects";
+
+const cardClass =
+  "group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring";
 
 export function PortfolioHome() {
   const router = useRouter();
@@ -34,18 +38,26 @@ export function PortfolioHome() {
           <p className="text-sm text-muted-foreground">Даня Ретивых</p>
           <h1 className="mt-2 text-4xl font-medium tracking-tight sm:text-5xl">Портфолио</h1>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-            Картинка, название и год. Нажмите на снимок — откроется сам проект.
+            Сайты и грамоты. На карточке снимок, подпись и дата.
           </p>
         </header>
+        <nav className="mx-auto mt-6 flex justify-center gap-2 text-sm" aria-label="Разделы">
+          <a href="#sites" className="rounded-full border bg-white px-4 py-1.5 hover:bg-muted">
+            Сайты
+          </a>
+          <a href="#certificates" className="rounded-full border bg-white px-4 py-1.5 hover:bg-muted">
+            Грамоты
+          </a>
+        </nav>
 
         <form onSubmit={onSubmit} className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
           <label className="relative min-w-0 flex-1">
-            <span className="sr-only">Поиск по проектам</span>
+            <span className="sr-only">Поиск</span>
             <SearchIcon />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Поиск по проектам"
+              placeholder="Поиск"
               type="search"
               className="h-12 w-full rounded-full border border-input bg-white pr-4 pl-11 text-base shadow-sm outline-none focus-visible:ring-3 focus-visible:ring-ring"
             />
@@ -61,56 +73,58 @@ export function PortfolioHome() {
           </button>
         </form>
 
-        {results.length === 0 ? (
-          <div className="mx-auto mt-16 max-w-md text-center">
-            <p className="text-lg font-medium">Ничего не нашлось</p>
-            <p className="mt-2 text-sm text-muted-foreground">В портфолио есть «комната» и «evernote».</p>
-          </div>
-        ) : (
-          <ul className="mt-10 grid gap-8 sm:grid-cols-2">
-            {results.map((project, index) => {
-              const external = project.href.startsWith("http");
-              const className =
-                "group block overflow-hidden rounded-2xl border border-[#dadce0] bg-white shadow-[0_1px_2px_rgba(60,64,67,0.12)] outline-none transition motion-safe:hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(60,64,67,0.16)] focus-visible:ring-3 focus-visible:ring-ring";
-              const card = (
-                <>
-                  <span className={`block aspect-[4/3] ${project.frameClass}`}>
-                    {/* Pre-sized static file. The image optimizer was the slow part of the first open. */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={project.image}
-                      alt={project.imageAlt}
-                      width={project.imageWidth}
-                      height={project.imageHeight}
-                      fetchPriority={index === 0 ? "high" : "auto"}
-                      decoding="async"
-                      className="h-full w-full object-contain"
-                    />
-                  </span>
-                  <span className="block px-4 py-3.5">
-                    <span className="block text-lg font-medium tracking-tight text-[#202124]">{project.title}</span>
-                    <time dateTime={project.dateTime} className="mt-0.5 block text-sm text-[#70757a]">
-                      {project.date}
-                    </time>
-                  </span>
-                </>
-              );
-              return (
-                <li key={project.slug}>
-                  {external ? (
-                    <a href={project.href} className={className}>
-                      {card}
-                    </a>
-                  ) : (
-                    <Link href={project.href} className={className}>
-                      {card}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <section id="sites" className="mt-10 scroll-mt-8">
+          <h2 className="text-2xl font-medium tracking-tight">Сайты</h2>
+          {results.length === 0 ? (
+            <div className="mt-8 rounded-2xl border border-dashed px-6 py-12 text-center">
+              <p className="text-lg font-medium">В сайтах ничего не нашлось</p>
+              <p className="mt-2 text-sm text-muted-foreground">Есть «комната» и «evernote».</p>
+            </div>
+          ) : (
+            <ul className="mt-8 grid gap-8 sm:grid-cols-2">
+              {results.map((project, index) => {
+                const external = project.href.startsWith("http");
+                const card = (
+                  <>
+                    <span className={`block aspect-[4/3] ${project.frameClass}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={project.image}
+                        alt={project.imageAlt}
+                        width={project.imageWidth}
+                        height={project.imageHeight}
+                        fetchPriority={index === 0 ? "high" : "auto"}
+                        decoding="async"
+                        className="h-full w-full object-contain"
+                      />
+                    </span>
+                    <span className="block px-4 py-3.5">
+                      <span className="block text-lg font-medium tracking-tight text-[#202124]">{project.title}</span>
+                      <time dateTime={project.dateTime} className="mt-0.5 block text-sm text-[#70757a]">
+                        {project.date}
+                      </time>
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={project.slug}>
+                    {external ? (
+                      <a href={project.href} className={cardClass}>
+                        {card}
+                      </a>
+                    ) : (
+                      <Link href={project.href} className={cardClass}>
+                        {card}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        <CertificatesSection query={query} />
 
         <footer className="mt-auto pt-16 text-center text-xs text-muted-foreground">Даня Ретивых</footer>
       </main>
