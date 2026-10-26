@@ -36,7 +36,7 @@ export const projects: Project[] = [
     imageWidth: 960,
     imageHeight: 566,
     imageAlt: "Страница входа Notes с полями email и пароль",
-    frameClass: "bg-[#f6f5f2]",
+    frameClass: "bg-[#f7f4ee]",
     keywords: ["evernote", "notes", "заметки", "блокнот", "login"],
   },
 ];
