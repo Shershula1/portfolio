@@ -89,7 +89,7 @@ export function PortfolioHome() {
                   </span>
                   <span className="block px-4 py-3.5">
                     <span className="block text-lg font-medium tracking-tight text-[#202124]">{project.title}</span>
-                    <time dateTime={project.date} className="mt-0.5 block text-sm text-[#70757a]">
+                    <time dateTime={project.dateTime} className="mt-0.5 block text-sm text-[#70757a]">
                       {project.date}
                     </time>
                   </span>

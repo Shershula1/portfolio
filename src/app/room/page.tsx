@@ -21,8 +21,8 @@ export default function RoomPage() {
             <ArrowLeft className="size-4" />
             Портфолио
           </Link>
-          <time dateTime="2026" className="text-sm text-muted-foreground">
-            2026
+          <time dateTime="2026-10-26" className="text-sm text-muted-foreground">
+            26.10.2026
           </time>
         </div>
       </header>
