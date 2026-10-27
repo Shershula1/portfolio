@@ -48,11 +48,11 @@ export function PortfolioHome() {
     const needle = query.trim().toLowerCase();
     if (!needle) return projects;
     return projects.filter((project) => {
-      const titles = project.slug === "room" ? [project.title, text.roomTitle] : [project.title];
+      const titles = [project.title, project.titleEn].filter(Boolean);
       const haystack = [...titles, project.date, ...project.keywords].join(" ").toLowerCase();
       return haystack.includes(needle);
     });
-  }, [query, text.roomTitle]);
+  }, [query]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -180,7 +180,7 @@ export function PortfolioHome() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={project.image}
-                        alt={project.slug === "room" ? text.roomAlt : project.imageAlt}
+                        alt={lang === "en" && project.imageAltEn ? project.imageAltEn : project.imageAlt}
                         width={project.imageWidth}
                         height={project.imageHeight}
                         fetchPriority={index === 0 ? "high" : "auto"}
@@ -190,7 +190,7 @@ export function PortfolioHome() {
                     </span>
                     <span className="block px-5 pt-4 pb-5">
                       <span className="block font-serif text-xl leading-snug font-medium tracking-tight text-[#1c1915]">
-                        {project.slug === "room" ? text.roomTitle : project.title}
+                        {lang === "en" && project.titleEn ? project.titleEn : project.title}
                       </span>
                       <time dateTime={project.dateTime} className="mt-1.5 block text-[0.75rem] tracking-[0.06em] text-[#8d8478]">
                         {project.date}

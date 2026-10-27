@@ -8,6 +8,8 @@ export type Project = {
   imageWidth: number;
   imageHeight: number;
   imageAlt: string;
+  titleEn?: string;
+  imageAltEn?: string;
   frameClass: string;
   keywords: string[];
 };
@@ -15,16 +17,33 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "room",
-    href: "https://cartoons-ones-missed-village.trycloudflare.com/",
+    href: "https://shershula1.github.io/penrose-rays/",
     title: "Неосвещаемая комната",
+    titleEn: "Unilluminable room",
     date: "26.10.2026",
     dateTime: "2026-10-26",
     image: "/projects/room.webp",
     imageWidth: 960,
     imageHeight: 746,
     imageAlt: "Овальная зеркальная комната: жёлтые лучи на чёрном фоне и тёмные карманы",
+    imageAltEn: "An oval mirrored room: yellow rays on black and dark pockets",
     frameClass: "bg-black",
-    keywords: ["комната", "неосвещаемая", "пенроуз", "свет", "room"],
+    keywords: ["комната", "неосвещаемая", "пенроуз", "свет", "room", "unilluminable"],
+  },
+  {
+    slug: "cube",
+    href: "https://shershula1.github.io/tesseract/",
+    title: "Четырёхмерный куб",
+    titleEn: "Four-dimensional cube",
+    date: "28.10.2026",
+    dateTime: "2026-10-28",
+    image: "/projects/cube.webp",
+    imageWidth: 614,
+    imageHeight: 546,
+    imageAlt: "Проволочный четырёхмерный куб: внешняя оболочка и куб внутри",
+    imageAltEn: "A wireframe four-dimensional cube, with an inner cube inside the outer shell",
+    frameClass: "bg-black",
+    keywords: ["куб", "четырёхмерный", "четырехмерный", "тессеракт", "tesseract", "cube", "4d"],
   },
   {
     slug: "evernote",
