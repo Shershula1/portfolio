@@ -1,3 +1,5 @@
+import { publicPath } from "@/lib/public-path";
+
 const MAX_BYTES = 4 * 1024 * 1024;
 
 export class CertificateFileError extends Error {
@@ -68,7 +70,7 @@ function imagePreview(file: File): Promise<string> {
 
 async function pdfPreview(file: File): Promise<string> {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+  pdfjs.GlobalWorkerOptions.workerSrc = publicPath("/pdf.worker.min.mjs");
   const data = new Uint8Array(await file.arrayBuffer());
   const task = pdfjs.getDocument({ data });
   const document = await task.promise;

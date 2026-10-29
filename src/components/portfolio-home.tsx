@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CertificatesSection } from "@/components/certificates-section";
 import { projects } from "@/data/projects";
 import { copy, type Lang } from "@/lib/copy";
+import { publicPath } from "@/lib/public-path";
 
 type Section = "sites" | "certificates";
 
@@ -87,7 +88,7 @@ export function PortfolioHome() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/portrait.webp"
+              src={publicPath("/portrait.webp")}
               alt={text.name}
               width={720}
               height={961}

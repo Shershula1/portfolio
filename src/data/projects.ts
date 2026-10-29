@@ -1,3 +1,5 @@
+import { publicPath } from "@/lib/public-path";
+
 export type Project = {
   slug: string;
   href: string;
@@ -22,7 +24,7 @@ export const projects: Project[] = [
     titleEn: "Unilluminable room",
     date: "26.10.2026",
     dateTime: "2026-10-26",
-    image: "/projects/room.webp",
+    image: publicPath("/projects/room.webp"),
     imageWidth: 960,
     imageHeight: 746,
     imageAlt: "Овальная зеркальная комната: жёлтые лучи на чёрном фоне и тёмные карманы",
@@ -37,7 +39,7 @@ export const projects: Project[] = [
     titleEn: "Four-dimensional cube",
     date: "28.10.2026",
     dateTime: "2026-10-28",
-    image: "/projects/cube.webp",
+    image: publicPath("/projects/cube.webp"),
     imageWidth: 614,
     imageHeight: 546,
     imageAlt: "Проволочный четырёхмерный куб: внешняя оболочка и куб внутри",
@@ -51,7 +53,7 @@ export const projects: Project[] = [
     title: "Evernote",
     date: "20.10.2026",
     dateTime: "2026-10-20",
-    image: "/projects/evernote.webp",
+    image: publicPath("/projects/evernote.webp"),
     imageWidth: 960,
     imageHeight: 566,
     imageAlt: "Страница входа Notes с полями email и пароль",

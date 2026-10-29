@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s — Даня Ретивых",
   },
   description:
-    "Портфолио Дани Ретивых: неосвещаемая комната и Evernote. На карточке картинка, название и год.",
+    "Портфолио Дани Ретивых: неосвещаемая комната, четырёхмерный куб и Evernote.",
 };
 
 export default function RootLayout({
